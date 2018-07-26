@@ -1,0 +1,8 @@
+#Config file for servo Thermometer
+# lines are host;servoMinTemp;servoMaxTemp;sleepInterval;sleepMode;logging
+esp8266-servoTherm1
+8
+38
+120
+1
+0
