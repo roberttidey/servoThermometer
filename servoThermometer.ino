@@ -61,6 +61,7 @@ unsigned long wifiCheckTime;
 unsigned long startUpTime;
 int servoMaxTemp = 38;
 int servoMinTemp = 8;
+int tempUnits = 0;
 int servoInitialised = 0;
 unsigned long updateCount = 0;
 
@@ -152,7 +153,6 @@ void logEvent(int eventType, String event) {
 		f.close();
 	}
 }
-
 
 /*
   Connect to local wifi with retries
@@ -389,9 +389,11 @@ void getConfig() {
 					case 2: servoMaxTemp = line.toInt();break;
 					case 3: sleepInterval = line.toInt();break;
 					case 4: sleepMode = line.toInt();break;
-					case 5:
-						logging =line.toInt();
+					case 5: logging = line.toInt();break;
+					case 6:
+						tempUnits =line.toInt();
 						Serial.println(F("Config loaded from file OK"));
+						break;
 				}
 				config++;
 			}
@@ -405,6 +407,7 @@ void getConfig() {
 		Serial.print(F("sleepInterval:"));Serial.println(sleepInterval);
 		Serial.print(F("sleepMode:"));Serial.println(sleepMode);
 		Serial.print(F("logging:"));Serial.println(logging);
+		Serial.print(F("tempUnits:"));Serial.println(tempUnits);
 	} else {
 		Serial.println(String(CONFIG_FILE) + " not found");
 	}
@@ -455,6 +458,8 @@ void checkTemp() {
 	DS18B20.requestTemperatures(); 
 	newTemp = DS18B20.getTempCByIndex(0);
 	if(newTemp != 85.0 && newTemp != (-127.0)) {
+		//convert to Fahrenheit if required
+		if(tempUnits == 1) newTemp = newTemp * 1.8 + 32;
 		Serial.print("New temperature:");
 		Serial.println(String(newTemp).c_str());
 		servoDisplay(newTemp);
