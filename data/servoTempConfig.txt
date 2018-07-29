@@ -1,8 +1,10 @@
 #Config file for servo Thermometer
-# lines are host;servoMinTemp;servoMaxTemp;sleepInterval;sleepMode;logging
+# lines are host;servoMinTemp;servoMaxTemp;sleepInterval;sleepMode;logging;C/F;ADC_CAL
 esp8266-servoTherm1
 8
 38
 120
 1
+1
 0
+0.96
