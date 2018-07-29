@@ -93,7 +93,9 @@ ESP8266HTTPUpdateServer httpUpdater;
 #define CONFIG_FILE "/servoTempConfig.txt"
 #define COUNT_FILE "/servoTempCount.txt"
 #define LOG_FILE "/servoTempLog.txt"
+//event types >= 100 are always logged
 #define EVENT_TEMP 1
+#define EVENT_BATTERY 100
 //OFF= on all time with wifi. LIGHT=onll time no wifi, DEEP=one shot + wake up
 #define SLEEP_MODE_OFF 0
 #define SLEEP_MODE_DEEP 1
@@ -105,6 +107,9 @@ int sleepInterval = 300; //seconds
 int sleepMode = SLEEP_MODE_DEEP;
 float newTemp;
 
+float ADC_CAL =0.96;
+float battery_mult = 1220.0/220.0/1024;//resistor divider, vref, max count
+float battery_volts;
 void ICACHE_RAM_ATTR  delaymSec(unsigned long mSec) {
 	unsigned long ms = mSec;
 	while(ms > 100) {
@@ -147,7 +152,7 @@ void unusedIO() {
   Log event
 */
 void logEvent(int eventType, String event) {
-	if(logging) {
+	if(logging || eventType >= EVENT_BATTERY) {
 		File f = SPIFFS.open(LOG_FILE, "a");
 		f.print(String(updateCount) + "," + String(eventType) + "," + event + "\n");
 		f.close();
@@ -390,8 +395,9 @@ void getConfig() {
 					case 3: sleepInterval = line.toInt();break;
 					case 4: sleepMode = line.toInt();break;
 					case 5: logging = line.toInt();break;
-					case 6:
-						tempUnits =line.toInt();
+					case 6: tempUnits =line.toInt();break;
+					case 7:
+						ADC_CAL =line.toFloat();
 						Serial.println(F("Config loaded from file OK"));
 						break;
 				}
@@ -408,6 +414,7 @@ void getConfig() {
 		Serial.print(F("sleepMode:"));Serial.println(sleepMode);
 		Serial.print(F("logging:"));Serial.println(logging);
 		Serial.print(F("tempUnits:"));Serial.println(tempUnits);
+		Serial.print(F("ADC_CAL:"));Serial.println(ADC_CAL);
 	} else {
 		Serial.println(String(CONFIG_FILE) + " not found");
 	}
@@ -541,6 +548,10 @@ void updateCounter() {
 void loop() {
 	int i;
 	updateCounter();
+	if((updateCount % 10) == 0) {
+		battery_volts = battery_mult * ADC_CAL * analogRead(A0);
+		logEvent(EVENT_BATTERY, String(battery_volts));
+	}
 	checkTemp();
 	if(sleepMode == SLEEP_MODE_DEEP) {
 		Serial.println("Active Msec before sleep " + String(millis()-startUpTime));
