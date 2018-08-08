@@ -440,8 +440,8 @@ void testServo() {
 void servoDisplay(float value) {
 	int servoPos;
 	Serial.println("ServoDisplay " + String(value));
-	if(value < servoMinTemp) value < servoMinTemp;
-	if(value > servoMaxTemp) value < servoMinTemp;
+	if(value < servoMinTemp) value = servoMinTemp;
+	if(value > servoMaxTemp) value = servoMaxTemp;
 	if(servoMaxTemp > servoMinTemp) {
 		digitalWrite(SERVO_ENABLE, 1);
 		delaymSec(100);
