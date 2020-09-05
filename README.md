@@ -1,7 +1,13 @@
 # servoThermometer
 Analog temperature display using servo and esp8266
 
-Construction details to be uploaded shortly
+Construction details at https://www.instructables.com/id/ServoThermometer/
+
+It makes use of the BaseSupport library at
+
+https://github.com/roberttidey/BaseSupport
+
+Edit the WifiManager and update passwords in BaseConfig.h
 
 ## Features
 - Self contained unit holding electronics, servo and battery
