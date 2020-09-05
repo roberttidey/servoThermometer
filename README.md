@@ -8,6 +8,7 @@ It makes use of the BaseSupport library at
 https://github.com/roberttidey/BaseSupport
 
 Edit the WifiManager and update passwords in BaseConfig.h
+Uncomment FASTCONNECT in BaseConfig.h as required
 
 ## Features
 - Self contained unit holding electronics, servo and battery
